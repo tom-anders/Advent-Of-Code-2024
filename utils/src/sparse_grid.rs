@@ -13,11 +13,7 @@ pub struct SparseGrid<T> {
 
 impl<T: Hash, V: Into<Vec2D>> FromIterator<(V, T)> for SparseGrid<T> {
     fn from_iter<I: IntoIterator<Item = (V, T)>>(iter: I) -> Self {
-        Self::from(
-            iter.into_iter()
-                .map(|(pos, val)| (pos.into(), val))
-                .collect::<HashMap<_,_>>(),
-        )
+        Self::from(iter.into_iter().map(|(pos, val)| (pos.into(), val)).collect::<HashMap<_, _>>())
     }
 }
 
@@ -54,25 +50,22 @@ where
     pub fn orthogonal_neighbors<'a, 'b: 'a>(
         &'a self,
         pos: &'b Vec2D,
-    ) -> impl Iterator<Item = (&Vec2D, &T)> + 'a {
-        pos.orthogonal_neighbors()
-            .flat_map(|pos| self.get(pos))
-            .map(move |val| (pos, val))
+    ) -> impl Iterator<Item = (&'a Vec2D, &'a T)> + 'a {
+        pos.orthogonal_neighbors().flat_map(|pos| self.get(pos)).map(move |val| (pos, val))
     }
 
     pub fn diagonal_neighbors<'a, 'b: 'a>(
         &'a self,
         pos: &'b Vec2D,
-    ) -> impl Iterator<Item = (&Vec2D, &T)> + 'a {
-        pos.diagonal_neighbors()
-            .flat_map(|pos| self.get(pos))
-            .map(move |val| (pos, val))
+    ) -> impl Iterator<Item = (&'a Vec2D, &'a T)> + 'a {
+        pos.diagonal_neighbors().flat_map(|pos| self.get(pos)).map(move |val| (pos, val))
     }
 
-    pub fn all_neighbors<'a, 'b: 'a>(&'a self, pos: &'b Vec2D) -> impl Iterator<Item = (&Vec2D, &T)> + 'a {
-        pos.all_neighbors()
-            .flat_map(|pos| self.get(pos))
-            .map(move |val| (pos, val))
+    pub fn all_neighbors<'a, 'b: 'a>(
+        &'a self,
+        pos: &'b Vec2D,
+    ) -> impl Iterator<Item = (&'a Vec2D, &'a T)> + 'a {
+        pos.all_neighbors().flat_map(|pos| self.get(pos)).map(move |val| (pos, val))
     }
 }
 
@@ -82,9 +75,8 @@ mod tests {
 
     #[test]
     fn get() {
-        let grid: SparseGrid<_> = [((0, 0), "a"), ((1, 0), "b"), ((0, 1), "c"), ((1, 1), "d")]
-            .into_iter()
-            .collect();
+        let grid: SparseGrid<_> =
+            [((0, 0), "a"), ((1, 0), "b"), ((0, 1), "c"), ((1, 1), "d")].into_iter().collect();
 
         assert_eq!(grid.get((0, 0)), Some(&"a"));
         assert_eq!(grid.get((1, 0)), Some(&"b"));
