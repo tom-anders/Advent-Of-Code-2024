@@ -8,7 +8,10 @@ pub struct Input {
     pub raw: String,
 }
 
-impl<T> From<T> for Input where T: ToString {
+impl<T> From<T> for Input
+where
+    T: ToString,
+{
     fn from(value: T) -> Self {
         Self { raw: value.to_string().trim().to_string() }
     }
@@ -60,9 +63,9 @@ impl Input {
         self.lines().map(|line| line.split(sep).map(|s| s.parse().unwrap()).collect_vec()).into()
     }
 
-    pub fn parse_sparse_grid<T: FromStr>(&self, sep: &str) -> SparseGrid<T>
+    pub fn parse_sparse_grid<T>(&self, sep: &str) -> SparseGrid<T>
     where
-        T: std::hash::Hash,
+        T: std::hash::Hash + FromStr,
         <T as std::str::FromStr>::Err: std::fmt::Debug,
     {
         self.lines()

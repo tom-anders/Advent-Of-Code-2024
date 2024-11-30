@@ -266,7 +266,7 @@ impl<'a, T> Iterator for ColIter<'a, T> {
     }
 }
 
-impl<'a, T> DoubleEndedIterator for ColIter<'a, T> {
+impl<T> DoubleEndedIterator for ColIter<'_, T> {
     fn next_back(&mut self) -> Option<Self::Item> {
         if self.row_back == self.row {
             return None;

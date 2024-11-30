@@ -48,10 +48,7 @@ pub trait EvenMoreItertools: Iterator {
         <N as std::str::FromStr>::Err: std::fmt::Debug,
         I: std::fmt::Display,
     {
-        self.map(|i| i.to_string())
-            .collect::<String>()
-            .parse()
-            .unwrap()
+        self.map(|i| i.to_string()).collect::<String>().parse().unwrap()
     }
 
     fn fold_digits_to_u64<I>(self) -> u64
@@ -73,20 +70,15 @@ pub struct Solution {
 
 impl Solution {
     pub fn copy_to_clipboard(&self) {
-        let solution_to_copy = if self.part2.is_some() {
-            &self.part2
-        } else {
-            &self.part1
-        };
+        let solution_to_copy = if self.part2.is_some() { &self.part2 } else { &self.part1 };
 
         if let Some(solution_to_copy) = solution_to_copy {
             std::process::Command::new("bash")
                 .arg("-c")
-                .arg(format!(
-                    "echo {} | xclip -r -selection clipboard",
-                    solution_to_copy
-                ))
+                .arg(format!("echo {} | xclip -r -selection clipboard", solution_to_copy))
                 .spawn()
+                .expect("Failed to copy solution to clipboard")
+                .wait()
                 .expect("Failed to copy solution to clipboard");
         }
     }
@@ -119,19 +111,13 @@ impl PartSolution for () {
 
 impl<T: PartSolution> From<T> for Solution {
     fn from(part1: T) -> Self {
-        Solution {
-            part1: part1.as_part_solution(),
-            part2: None,
-        }
+        Solution { part1: part1.as_part_solution(), part2: None }
     }
 }
 
 impl<T: PartSolution, U: PartSolution> From<(T, U)> for Solution {
     fn from((part1, part2): (T, U)) -> Self {
-        Solution {
-            part1: part1.as_part_solution(),
-            part2: part2.as_part_solution(),
-        }
+        Solution { part1: part1.as_part_solution(), part2: part2.as_part_solution() }
     }
 }
 
@@ -151,7 +137,10 @@ impl Display for Solution {
 #[macro_export]
 macro_rules! assert_example {
     ($input:expr, $part1:expr, $part2:expr) => {
-        pretty_assertions::assert_eq!(solve(Input::from($input.trim())).into(), Solution::from(($part1, $part2)));
+        pretty_assertions::assert_eq!(
+            solve(Input::from($input.trim())).into(),
+            Solution::from(($part1, $part2))
+        );
     };
     ($input:expr, $part1:expr) => {
         let solution = solve(Input::from($input.trim())).into();
@@ -189,18 +178,12 @@ mod tests {
         #[sep = ":"]
         struct ContainsVecColonSep(Vec<i32>);
 
-        assert_eq!(
-            Ok(ContainsVecColonSep(vec![-1, 2, -3])),
-            " -1: 2: -3".parse()
-        );
+        assert_eq!(Ok(ContainsVecColonSep(vec![-1, 2, -3])), " -1: 2: -3".parse());
 
         #[derive(aoc_derive::CollectFromStr, PartialEq, Debug)]
         struct ContainsHashSet(HashSet<i32>);
 
-        assert_eq!(
-            Ok(ContainsHashSet([-1, 2, -3].into_iter().collect())),
-            "-1, 2, -3".parse()
-        );
+        assert_eq!(Ok(ContainsHashSet([-1, 2, -3].into_iter().collect())), "-1, 2, -3".parse());
     }
 
     #[test]
@@ -219,9 +202,7 @@ mod tests {
         struct ContainsHashMapCustomSep(HashMap<i32, i32>);
 
         assert_eq!(
-            Ok(ContainsHashMapCustomSep(
-                [(-1, 2), (3, 4)].iter().cloned().collect()
-            )),
+            Ok(ContainsHashMapCustomSep([(-1, 2), (3, 4)].iter().cloned().collect())),
             "-1 => 2 ; 3 => 4".parse()
         );
     }
