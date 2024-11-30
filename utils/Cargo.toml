@@ -1,0 +1,21 @@
+[package]
+name = "utils"
+version = "0.1.0"
+authors = ["Tom Praschan <13141438+tom-anders@users.noreply.github.com>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+regex.workspace = true
+itertools.workspace = true
+parse-display.workspace = true
+priority-queue.workspace = true
+num.workspace = true
+derive_more.workspace = true
+lazy-regex.workspace = true
+
+aoc_derive.path = "../aoc_derive"
+
+[dev-dependencies]
+pretty_assertions.workspace = true

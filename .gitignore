@@ -1,0 +1,6 @@
+/target
+inputs
+.session
+Cargo.lock
+flamegraph.svg
+perf.*
