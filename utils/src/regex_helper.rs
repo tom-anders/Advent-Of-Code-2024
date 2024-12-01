@@ -142,7 +142,13 @@ mod tests {
 
     #[test]
     fn find_into_tuple() {
-        assert_eq!(("hello", "world", "bye"), regex!(r"\w+").find_into_tuple("hello world !!! bye"));
-        assert_eq!((1, -1, 22), regex!(r"[+-]?\d+").find_parse_into_tuple("hjkhkjh1 hhjk -1hjhhhh [[22]]"));
+        assert_eq!(
+            ("hello", "world", "bye"),
+            regex!(r"\w+").find_into_tuple("hello world !!! bye")
+        );
+        assert_eq!(
+            (1, -1, 22),
+            regex!(r"[+-]?\d+").find_parse_into_tuple("hjkhkjh1 hhjk -1hjhhhh [[22]]")
+        );
     }
 }
