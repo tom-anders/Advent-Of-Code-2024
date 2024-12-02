@@ -26,6 +26,7 @@ lazy-regex.workspace = true
 parse-display.workspace = true
 rayon.workspace = true
 regex.workspace = true
+num.workspace = true
 
 [dev-dependencies]
 pretty_assertions.workspace = true
