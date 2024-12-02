@@ -46,6 +46,10 @@ where
     })
 }
 
+pub fn extract_numbers_unsigned(s: &str) -> impl Iterator<Item = usize> + '_ {
+    extract_numbers::<usize>(s)
+}
+
 impl RegexHelper for regex::Regex {
     fn find_iter_str<'a, 'b: 'a>(&'a self, s: &'b str) -> impl Iterator<Item = &'b str> + 'a {
         self.find_iter(s).map(|m| m.as_str())

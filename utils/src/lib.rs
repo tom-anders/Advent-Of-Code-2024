@@ -58,6 +58,13 @@ pub trait EvenMoreItertools: Iterator {
     {
         self.fold_digits_to_number()
     }
+
+    fn skip_nth<I>(self, skip: usize) -> impl Iterator<Item = I>
+    where
+        Self: Iterator<Item = I> + Sized,
+    {
+        self.enumerate().filter_map(move |(i, x)| (i != skip).then_some(x))
+    }
 }
 
 impl<T: ?Sized> EvenMoreItertools for T where T: Iterator {}
