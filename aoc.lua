@@ -5,17 +5,18 @@ M.init = function(day, impl, input)
     vim.cmd.edit(impl)
     vim.cmd 'Copilot disable' -- no spoilers please
 
-    vim.cmd.vsplit()
-    vim.cmd(string.format("terminal zsh -c 'git ls-files | entr cargo test --package day%d -- --nocapture --test-threads=1'", day))
-    vim.cmd 'normal G' -- Scroll to bottom on new output
-
-    -- back to main window
-    vim.cmd 'wincmd h'
-    vim.cmd 'wincmd 10>'
-
     -- Open input in new tab
     vim.cmd.tabedit(input)
     vim.cmd.tabprev()
+    vim.cmd.vsplit()
+    vim.cmd(string.format("terminal zsh -c 'git ls-files | entr cargo test --package day%d -- --nocapture --test-threads=1'", day))
+    vim.cmd 'normal G' -- Scroll to bottom on new output
+    vim.cmd.tabedit('%') -- New tab with only test output
+
+    -- back to main window
+    vim.cmd.tabprev()
+    vim.cmd 'wincmd h'
+    vim.cmd 'wincmd 10>'
 
     function build_and_debug(input) 
         vim.cmd('wa')
