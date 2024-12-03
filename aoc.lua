@@ -1,6 +1,7 @@
 local M = {}
 
 M.init = function(day, impl, input)
+    require("toggleterm").setup({ shell = '/usr/bin/env zsh -f' })
     vim.cmd.edit(impl)
     vim.cmd 'Copilot disable' -- no spoilers please
 
