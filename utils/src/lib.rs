@@ -146,12 +146,19 @@ macro_rules! assert_example {
     ($input:expr, $part1:expr, $part2:expr) => {
         pretty_assertions::assert_eq!(
             solve(Input::from($input.trim())).into(),
-            Solution::from(($part1, $part2))
+            Solution::from(($part1, $part2)),
+            "\n\n{}",
+            $input.trim()
         );
     };
     ($input:expr, $part1:expr) => {
         let solution = solve(Input::from($input.trim())).into();
-        pretty_assertions::assert_eq!(solution.part1, Some($part1.to_string()));
+        pretty_assertions::assert_eq!(
+            solution.part1,
+            Some($part1.to_string()),
+            "\n\n{}",
+            $input.trim()
+        );
     };
 }
 
@@ -159,7 +166,12 @@ macro_rules! assert_example {
 macro_rules! assert_part2 {
     ($input:expr, $part2:expr) => {
         let solution = solve(Input::from($input.trim())).into();
-        pretty_assertions::assert_eq!(solution.part2, Some($part2.to_string()));
+        pretty_assertions::assert_eq!(
+            solution.part2,
+            Some($part2.to_string()),
+            "\n\n{}",
+            $input.trim()
+        );
     };
 }
 
