@@ -22,6 +22,15 @@ impl Input {
         Input { raw: std::fs::read_to_string(input_file).unwrap() }
     }
 
+    pub fn as_str(&self) -> &str {
+        &self.raw
+    }
+
+    #[allow(clippy::len_without_is_empty)]
+    pub fn len(&self) -> usize {
+        self.raw.len()
+    }
+
     pub fn lines(&self) -> impl Iterator<Item = &str> + '_ {
         self.raw.lines()
     }
