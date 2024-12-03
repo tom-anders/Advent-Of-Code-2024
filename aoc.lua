@@ -49,6 +49,7 @@ M.init = function(day, impl, input)
                 strategy = {
                     'toggleterm',
                     use_shell = true, -- Needed for xclip to work correctly
+                    direction = 'horizontal',
                     auto_scroll = true,
                     on_create = function()
                         vim.keymap.set('n', 'q', ':q<CR>', {buffer = true, silent = true})
