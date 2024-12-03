@@ -1,6 +1,6 @@
 local M = {}
 
-M.init = function(day, impl, example, input)
+M.init = function(day, impl, input)
     vim.cmd.edit(impl)
     vim.cmd 'Copilot disable' -- no spoilers please
 
@@ -12,7 +12,9 @@ M.init = function(day, impl, example, input)
     vim.cmd 'wincmd h'
     vim.cmd 'wincmd 10>'
 
-    vim.cmd(string.format('DebugExe target/debug/day%d', day))
+    -- Open input in new tab
+    vim.cmd.tabedit(input)
+    vim.cmd.tabprev()
 
     function build_and_debug(input) 
         vim.cmd('wa')
@@ -23,9 +25,9 @@ M.init = function(day, impl, example, input)
             require'dap'.continue()
         end
     end
+    vim.cmd(string.format('DebugExe target/debug/day%d', day))
 
     vim.keymap.set('n', '<leader>da', function() build_and_debug(input) end)
-    vim.keymap.set('n', '<leader>dA', function() build_and_debug(example) end)
 
     local overseer = require'overseer'
     overseer.register_template {
@@ -78,13 +80,11 @@ M.init = function(day, impl, example, input)
     end
 
     vim.keymap.set('n', '<leader>a', function() save_and_solve({input = input}) end)
-    vim.keymap.set('n', '<leader>A', function() save_and_solve({input = example}) end)
 
     vim.keymap.del('n', '<leader>or')
     vim.keymap.del('n', '<leader>ot')
 
     vim.keymap.set('n', '<leader>o', function() save_and_solve({input = input, release = true}) end)
-    vim.keymap.set('n', '<leader>O', function() save_and_solve({input = example, release = true}) end)
 
     vim.keymap.set('n', '<leader>ca', function() 
         vim.cmd(string.format(":!cargo add %s --package day%d", vim.fn.input("package(s) to add: "), day))
