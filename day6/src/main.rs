@@ -1,75 +1,52 @@
-#![feature(hash_set_entry)]
-
-use std::collections::{HashSet, hash_set::Entry};
+use std::collections::HashSet;
 
 use aoc_derive::aoc_main;
 use grid::Grid;
+use itertools::Itertools;
 use math::Vec2D;
 use utils::*;
 
-fn part1_visited(map: &Grid<char>, start: Vec2D) -> HashSet<Vec2D> {
+fn iterate(map: &Grid<char>, start: Vec2D) -> Option<HashSet<(Vec2D, Vec2D)>> {
     let mut pos = start;
-
     let mut heading = Vec2D::new(0, -1);
-
     let mut visited = HashSet::new();
+
     loop {
-        visited.insert(pos);
+        if visited.contains(&(pos, heading)) {
+            return None; // loop detected
+        }
+        visited.insert((pos, heading));
         match map.get(pos + heading) {
             None => break,
             Some(&'#') => heading = heading.rotated_right(),
-            _ => {
-                pos += heading;
-            }
+            _ => pos += heading,
         }
     }
-    visited
-}
-
-fn check_obstruction(map: &Grid<char>, mut pos: Vec2D) -> bool {
-    let mut visited = HashSet::new();
-    let mut heading = Vec2D::new(0, -1);
-    visited.insert((pos, heading));
-    loop {
-        match map.get(pos + heading) {
-            None => {
-                return false;
-            }
-            Some(&'#') => {
-                heading = heading.rotated_right();
-            }
-            _ => {
-                pos += heading;
-            }
-        }
-        match visited.entry((pos, heading)) {
-            Entry::Vacant(entry) => entry.insert(),
-            Entry::Occupied(_) => return true,
-        }
-    }
-}
-
-fn part2(mut map: Grid<char>, start: Vec2D, to_check: &HashSet<Vec2D>) -> usize {
-    to_check
-        .iter()
-        .filter(|&&block| {
-            map[block] = '#';
-            let res = check_obstruction(&map, start);
-            map[block] = '.';
-            res
-        })
-        .count()
+    Some(visited)
 }
 
 #[aoc_main]
 fn solve(input: Input) -> impl Into<Solution> {
-    let map = input.char_grid();
+    let mut map = input.char_grid();
 
     let start = map.iter().find_map(|(pos, &c)| (c == '^').then_some(pos)).unwrap();
 
-    let visited = part1_visited(&map, start);
+    let visited: HashSet<_> =
+        iterate(&map, start).unwrap().into_iter().map(|(pos, _)| pos).unique().collect();
 
-    (visited.len(), part2(map, start, &visited))
+    let part1 = visited.len();
+
+    let part2 = visited
+        .into_iter()
+        .filter(|&pos| {
+            map[pos] = '#';
+            let res = iterate(&map, start);
+            map[pos] = '.';
+            res.is_none()
+        })
+        .count();
+
+    (part1, part2)
 }
 
 #[cfg(test)]
