@@ -288,6 +288,21 @@ pub trait WeightedGrid {
     fn cost(&self, from: Vec2D, to: Vec2D) -> graphs::Cost;
 }
 
+impl<T> std::fmt::Display for Grid<T>
+where
+    T: std::fmt::Display,
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for row in self.rows() {
+            for (_, x) in row {
+                write!(f, "{x}")?;
+            }
+            writeln!(f)?;
+        }
+        Ok(())
+    }
+}
+
 impl<T> graphs::WeightedGraph for Grid<T>
 where
     Grid<T>: WeightedGrid,
