@@ -14,8 +14,10 @@ pub fn aoc_main(_args: TokenStream, item: TokenStream) -> TokenStream {
 
         fn main() {
             let input_file = std::env::args().nth(1).expect("Expect input file as first argument");
+            let start_time = std::time::Instant::now();
             let solution: Solution = #solve_fn_identifier(Input::new(&input_file)).into();
             println!("{}", solution);
+            println!("Time: {:.1?}", start_time.elapsed());
             solution.copy_to_clipboard();
         }
     }
@@ -112,10 +114,7 @@ pub fn hash_map_from_str(item: TokenStream) -> TokenStream {
         })
         .unwrap_or(":".to_string());
 
-    let reverse = s
-        .attrs
-        .iter()
-        .any(|attr| attr.meta.path().is_ident("reverse"));
+    let reverse = s.attrs.iter().any(|attr| attr.meta.path().is_ident("reverse"));
     let reverse = if reverse {
         quote! { true }
     } else {
