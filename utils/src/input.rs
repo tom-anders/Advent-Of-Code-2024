@@ -58,6 +58,13 @@ impl Input {
         self.split_and_parse(sep)
     }
 
+    pub fn parse<T: FromStr>(&self) -> T
+    where
+        <T as std::str::FromStr>::Err: std::fmt::Debug,
+    {
+        self.raw.parse().unwrap()
+    }
+
     pub fn parse_lines<T: FromStr>(&self) -> impl Iterator<Item = T> + '_ + Clone
     where
         <T as std::str::FromStr>::Err: std::fmt::Debug,
