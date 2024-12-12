@@ -1,6 +1,7 @@
 use parse_display::FromStr;
 
-#[derive(Copy, Clone, Debug, Eq, Hash, FromStr, PartialOrd, Ord)]
+#[derive(Copy, Clone, Debug, Eq, Hash, FromStr, PartialOrd, Ord, derive_more::Display)]
+#[display("({x}, {y})")]
 // Parses [1, 2] or (1, 2) or {1, 2}
 #[from_str(regex = r"[\[\(\{](?<x>-?\d+),\s*(?<y>-?\d+)[\]\)\}]")]
 pub struct Vec2D {
@@ -8,7 +9,10 @@ pub struct Vec2D {
     pub y: i64,
 }
 
-impl<T> PartialEq<T> for Vec2D where T: Into<Vec2D> + Copy {
+impl<T> PartialEq<T> for Vec2D
+where
+    T: Into<Vec2D> + Copy,
+{
     fn eq(&self, other: &T) -> bool {
         let other: Vec2D = (*other).into();
         self.x == other.x && self.y == other.y
@@ -70,25 +74,15 @@ impl Vec2D {
     }
 
     pub fn diagonal_neighbors(&self) -> impl Iterator<Item = Vec2D> + '_ {
-        [
-            Vec2D { x: 1, y: 1 },
-            Vec2D { x: -1, y: 1 },
-            Vec2D { x: 1, y: -1 },
-            Vec2D { x: -1, y: -1 },
-        ]
-        .iter()
-        .map(move |&dir| *self + dir)
+        [Vec2D { x: 1, y: 1 }, Vec2D { x: -1, y: 1 }, Vec2D { x: 1, y: -1 }, Vec2D { x: -1, y: -1 }]
+            .iter()
+            .map(move |&dir| *self + dir)
     }
 
     pub fn orthogonal_neighbors(&self) -> impl Iterator<Item = Vec2D> + '_ {
-        [
-            Vec2D { x: 1, y: 0 },
-            Vec2D { x: -1, y: 0 },
-            Vec2D { x: 0, y: 1 },
-            Vec2D { x: 0, y: -1 },
-        ]
-        .iter()
-        .map(move |&dir| *self + dir)
+        [Vec2D { x: 1, y: 0 }, Vec2D { x: -1, y: 0 }, Vec2D { x: 0, y: 1 }, Vec2D { x: 0, y: -1 }]
+            .iter()
+            .map(move |&dir| *self + dir)
     }
 
     pub fn all_neighbors(&self) -> impl Iterator<Item = Vec2D> + '_ {
@@ -128,14 +122,11 @@ where
     type Output = Vec2D;
 
     fn mul(self, rhs: T) -> Self::Output {
-        Vec2D::new(
-            self.x * rhs.to_i64().unwrap(),
-            self.y * rhs.to_i64().unwrap(),
-        )
+        Vec2D::new(self.x * rhs.to_i64().unwrap(), self.y * rhs.to_i64().unwrap())
     }
 }
 
-impl <T> std::ops::MulAssign<T> for Vec2D
+impl<T> std::ops::MulAssign<T> for Vec2D
 where
     T: num::ToPrimitive + num::Integer,
 {
@@ -151,7 +142,7 @@ macro_rules! impl_left_mul {
         $(
             impl std::ops::Mul<Vec2D> for $t {
                 type Output = Vec2D;
-            
+
                 fn mul(self, rhs: Vec2D) -> Self::Output {
                     rhs * self
                 }
@@ -161,7 +152,10 @@ macro_rules! impl_left_mul {
 }
 impl_left_mul!(i8, i16, i32, i64, isize, u8, u16, u32, u64, usize);
 
-impl<T> std::ops::Add<T> for Vec2D where T: Into<Vec2D> {
+impl<T> std::ops::Add<T> for Vec2D
+where
+    T: Into<Vec2D>,
+{
     type Output = Vec2D;
 
     fn add(self, rhs: T) -> Self::Output {
@@ -170,13 +164,19 @@ impl<T> std::ops::Add<T> for Vec2D where T: Into<Vec2D> {
     }
 }
 
-impl<T> std::ops::AddAssign<T> for Vec2D where T: Into<Vec2D> {
+impl<T> std::ops::AddAssign<T> for Vec2D
+where
+    T: Into<Vec2D>,
+{
     fn add_assign(&mut self, rhs: T) {
         *self = *self + rhs;
     }
 }
 
-impl<T> std::ops::Sub<T> for Vec2D where T: Into<Vec2D> {
+impl<T> std::ops::Sub<T> for Vec2D
+where
+    T: Into<Vec2D>,
+{
     type Output = Vec2D;
 
     fn sub(self, rhs: T) -> Self::Output {
@@ -185,7 +185,10 @@ impl<T> std::ops::Sub<T> for Vec2D where T: Into<Vec2D> {
     }
 }
 
-impl<T> std::ops::SubAssign<T> for Vec2D where T: Into<Vec2D> {
+impl<T> std::ops::SubAssign<T> for Vec2D
+where
+    T: Into<Vec2D>,
+{
     fn sub_assign(&mut self, rhs: T) {
         *self = *self - rhs;
     }
@@ -246,7 +249,7 @@ mod tests {
         assert_eq!(Vec2D::new(1, -2).manhattan_dist(), 3);
     }
 
-    #[test] 
+    #[test]
     fn inside_box() {
         assert!(Vec2D::new(1, 2).inside_box((0, 0), (2, 3)));
         assert!(Vec2D::new(1, 2).inside_box((1, 2), (1, 2)));
@@ -275,21 +278,11 @@ mod tests {
     #[test]
     fn neighbors() {
         assert_eq!(
-            HashSet::from([
-                Vec2D::new(2, 2),
-                Vec2D::new(0, 2),
-                Vec2D::new(1, 3),
-                Vec2D::new(1, 1)
-            ]),
+            HashSet::from([Vec2D::new(2, 2), Vec2D::new(0, 2), Vec2D::new(1, 3), Vec2D::new(1, 1)]),
             Vec2D::new(1, 2).orthogonal_neighbors().collect(),
         );
         assert_eq!(
-            HashSet::from([
-                Vec2D::new(2, 3),
-                Vec2D::new(0, 3),
-                Vec2D::new(2, 1),
-                Vec2D::new(0, 1)
-            ]),
+            HashSet::from([Vec2D::new(2, 3), Vec2D::new(0, 3), Vec2D::new(2, 1), Vec2D::new(0, 1)]),
             Vec2D::new(1, 2).diagonal_neighbors().collect(),
         );
         assert_eq!(

@@ -65,6 +65,15 @@ pub trait EvenMoreItertools: Iterator {
     {
         self.enumerate().filter_map(move |(i, x)| (i != skip).then_some(x))
     }
+
+    fn unzip_vec<A, B>(self) -> (Vec<A>, Vec<B>)
+    where
+        Self: Sized + Iterator<Item = (A, B)>,
+    {
+        let mut unzipped: (Vec<A>, Vec<B>) = Default::default();
+        unzipped.extend(self);
+        unzipped
+    }
 }
 
 impl<T: ?Sized> EvenMoreItertools for T where T: Iterator {}
