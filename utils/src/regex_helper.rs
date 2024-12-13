@@ -3,6 +3,8 @@ use std::str::FromStr;
 use itertools::Itertools;
 use lazy_regex::regex;
 
+use crate::math::Vec2D;
+
 pub trait RegexHelper {
     /// shortcut for find_iter followed by a map to str
     fn find_iter_str<'a, 'b: 'a>(&'a self, s: &'b str) -> impl Iterator<Item = &'b str> + 'a;
@@ -48,6 +50,10 @@ where
 
 pub fn extract_numbers_unsigned(s: &str) -> impl Iterator<Item = usize> + '_ {
     extract_numbers::<usize>(s)
+}
+
+pub fn extract_two_numbers(s: &str) -> Vec2D {
+    extract_numbers::<i64>(s).collect_tuple::<(_, _)>().unwrap().into()
 }
 
 impl RegexHelper for regex::Regex {
