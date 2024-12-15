@@ -1,4 +1,4 @@
-use std::{collections::HashMap, ops::ControlFlow};
+use std::collections::HashMap;
 
 use aoc_derive::aoc_main;
 use grid::Grid;
