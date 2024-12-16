@@ -191,6 +191,15 @@ impl<T> Grid<T> {
 
 impl<T> Grid<T>
 where
+    T: PartialEq,
+{
+    pub fn find_position(&self, val: &T) -> Option<Vec2D> {
+        self.iter().find_map(|(pos, v)| (v == val).then_some(pos))
+    }
+}
+
+impl<T> Grid<T>
+where
     T: Clone,
 {
     pub fn with_value(val: T, num_rows: usize, num_cols: usize) -> Self {
