@@ -20,21 +20,22 @@ pub trait UnweightedGraph {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BfsResult<N: Node> {
-    distance: Option<usize>,
-    visited: HashSet<N>,
+    pub distance: Option<usize>,
+    pub visited: HashSet<N>,
 }
 
 pub fn bfs<N: Node>(
     graph: &impl UnweightedGraph<Node = N>,
     start: impl Into<N>,
-    end: impl Into<N>) -> BfsResult<N> {
+    end: impl Into<N>,
+) -> BfsResult<N> {
     bfs_impl(graph, start, Some(end.into()))
 }
 
-
 pub fn floodfill<N: Node>(
     graph: &impl UnweightedGraph<Node = N>,
-    start: impl Into<N>) -> HashSet<N> {
+    start: impl Into<N>,
+) -> HashSet<N> {
     bfs_impl(graph, start, None).visited
 }
 

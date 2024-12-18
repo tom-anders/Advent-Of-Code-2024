@@ -4,6 +4,7 @@ use itertools::Itertools;
 
 use crate::{grid::Grid, math::Vec2D, sparse_grid::SparseGrid};
 
+#[derive(Debug, Clone)]
 pub struct Input {
     pub raw: String,
 }
@@ -31,7 +32,7 @@ impl Input {
         self.raw.len()
     }
 
-    pub fn lines(&self) -> impl Iterator<Item = &str> + '_ {
+    pub fn lines(&self) -> impl Iterator<Item = &str> + Clone + '_ {
         self.raw.lines()
     }
 
