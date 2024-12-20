@@ -76,7 +76,7 @@ fn solve(input: Input) -> impl Into<Solution> {
         let regions = region_map.entry(*c).or_default();
 
         if !regions.iter().any(|r| r.contains(&pos)) {
-            regions.push(floodfill(&map, pos).into_iter().collect());
+            regions.push(floodfill(&map, pos).keys().copied().collect())
         }
     }
 

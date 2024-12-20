@@ -60,8 +60,8 @@ impl Vec2D {
         Self::new(self.y, -self.x)
     }
 
-    pub fn manhattan_dist(&self) -> i64 {
-        self.x.abs() + self.y.abs()
+    pub fn manhattan_dist(&self) -> usize {
+        (self.x.abs() + self.y.abs()) as usize
     }
 
     pub fn both_coordinates_positive(&self) -> bool {
