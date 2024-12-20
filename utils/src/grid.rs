@@ -2,7 +2,7 @@ use std::ops::{Index, IndexMut};
 
 use itertools::Itertools;
 
-use crate::{graphs, math::Vec2D};
+use crate::math::Vec2D;
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub struct Grid<T> {
@@ -287,16 +287,6 @@ impl<T> DoubleEndedIterator for ColIter<'_, T> {
     }
 }
 
-pub trait UnweightedGrid {
-    fn neighbors<'a, 'b: 'a>(&'a self, node: &'b Vec2D) -> impl Iterator<Item = Vec2D> + 'a;
-}
-
-pub trait WeightedGrid {
-    fn neighbors<'a, 'b: 'a>(&'a self, node: &'b Vec2D) -> impl Iterator<Item = Vec2D> + 'a;
-
-    fn cost(&self, from: Vec2D, to: Vec2D) -> graphs::Cost;
-}
-
 impl<T> std::fmt::Display for Grid<T>
 where
     T: std::fmt::Display,
@@ -309,37 +299,6 @@ where
             writeln!(f)?;
         }
         Ok(())
-    }
-}
-
-impl<T> graphs::WeightedGraph for Grid<T>
-where
-    Grid<T>: WeightedGrid,
-{
-    type Node = Vec2D;
-
-    fn neighbors<'a, 'b: 'a>(
-        &'a self,
-        node: &'b Self::Node,
-    ) -> impl Iterator<Item = (Self::Node, graphs::Cost)> + 'a {
-        assert!(self.contains(node));
-        WeightedGrid::neighbors(self, node)
-            .map(move |neighbor| (neighbor, self.cost(*node, neighbor)))
-    }
-}
-
-impl<T> graphs::UnweightedGraph for Grid<T>
-where
-    Grid<T>: UnweightedGrid,
-{
-    type Node = Vec2D;
-
-    fn neighbors<'a, 'b: 'a>(
-        &'a self,
-        node: &'b Self::Node,
-    ) -> impl Iterator<Item = Self::Node> + 'a {
-        assert!(self.contains(node));
-        UnweightedGrid::neighbors(self, node)
     }
 }
 

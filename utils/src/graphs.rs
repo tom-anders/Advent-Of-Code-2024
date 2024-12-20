@@ -1,5 +1,5 @@
 use std::cmp::Reverse;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::fmt::Debug;
 use std::hash::Hash;
 
@@ -21,7 +21,7 @@ pub trait UnweightedGraph {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BfsResult<N: Node> {
     pub distance: Option<usize>,
-    pub visited: HashSet<N>,
+    pub visited: HashMap<N, usize>,
 }
 
 pub fn bfs<N: Node>(
@@ -35,7 +35,7 @@ pub fn bfs<N: Node>(
 pub fn floodfill<N: Node>(
     graph: &impl UnweightedGraph<Node = N>,
     start: impl Into<N>,
-) -> HashSet<N> {
+) -> HashMap<N, usize> {
     bfs_impl(graph, start, None).visited
 }
 
@@ -47,7 +47,7 @@ fn bfs_impl<N: Node>(
     let start = start.into();
 
     let mut distance = 0;
-    let mut visited: HashSet<N> = HashSet::new();
+    let mut visited = HashMap::new();
 
     let mut next = HashSet::new();
     next.insert(start);
@@ -58,19 +58,15 @@ fn bfs_impl<N: Node>(
         }
         let mut neighbors = HashSet::new();
         for node in next {
-            visited.insert(node.clone());
+            visited.insert(node.clone(), distance);
 
             if Some(&node) == end.as_ref() {
                 return BfsResult { distance: Some(distance), visited };
             }
 
-            for n in graph.neighbors(&node) {
-                if !visited.contains(&n) {
-                    neighbors.insert(n);
-                }
-            }
+            neighbors.extend(graph.neighbors(&node));
         }
-        next = neighbors;
+        next = neighbors.into_iter().filter(|n| !visited.contains_key(n)).collect();
         distance += 1;
     }
 }
@@ -161,10 +157,7 @@ fn dfs_impl<T>(
 mod tests {
     use std::collections::HashMap;
 
-    use crate::{
-        grid::{self, Grid},
-        math::Vec2D,
-    };
+    use crate::{grid::Grid, math::Vec2D};
 
     use super::*;
     use pretty_assertions::assert_eq;
@@ -204,16 +197,16 @@ mod tests {
 
     #[test]
     fn grid_diff() {
-        impl grid::WeightedGrid for Grid<usize> {
-            fn cost(&self, from: Vec2D, to: Vec2D) -> Cost {
-                self[to].abs_diff(self[from])
-            }
+        #[allow(non_local_definitions)]
+        impl WeightedGraph for Grid<usize> {
+            type Node = Vec2D;
 
             fn neighbors<'a, 'b: 'a>(
                 &'a self,
-                node: &'b Vec2D,
-            ) -> impl Iterator<Item = Vec2D> + 'a {
+                node: &'b Self::Node,
+            ) -> impl Iterator<Item = (Self::Node, Cost)> + 'a {
                 self.orthogonal_neighbors(node)
+                    .map(|neighbor| (neighbor, self[*node].abs_diff(self[neighbor])))
             }
         }
 
@@ -232,7 +225,10 @@ mod tests {
 
     #[test]
     fn grid_bfs() {
-        impl grid::UnweightedGrid for Grid<char> {
+        #[allow(non_local_definitions)]
+        impl UnweightedGraph for Grid<char> {
+            type Node = Vec2D;
+
             fn neighbors<'a, 'b: 'a>(
                 &'a self,
                 node: &'b Vec2D,
@@ -257,10 +253,18 @@ mod tests {
             bfs(&grid, (0, 0), (2, 3)),
             BfsResult {
                 distance: Some(4),
-                visited: [(0, 0), (0, 1), (1, 1), (0, 2), (0, 3), (1, 3), (2, 3)]
-                    .into_iter()
-                    .map(Vec2D::from)
-                    .collect(),
+                visited: [
+                    ((0, 0), 0),
+                    ((0, 1), 1),
+                    ((1, 1), 1),
+                    ((0, 2), 2),
+                    ((0, 3), 3),
+                    ((1, 3), 3),
+                    ((2, 3), 4)
+                ]
+                .into_iter()
+                .map(|(pos, distance)| (Vec2D::from(pos), distance))
+                .collect(),
             }
         );
     }
