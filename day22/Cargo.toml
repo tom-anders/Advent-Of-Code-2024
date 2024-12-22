@@ -1,0 +1,18 @@
+[package]
+name = "day22"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+aoc_derive.path = '../aoc_derive'
+utils.path = '../utils'
+derive_more.workspace = true
+itertools.workspace = true
+lazy-regex.workspace = true
+parse-display.workspace = true
+rayon.workspace = true
+regex.workspace = true
+num.workspace = true
+
+[dev-dependencies]
+pretty_assertions.workspace = true
