@@ -254,6 +254,10 @@ impl<'a, T> ColIter<'a, T> {
     fn new(grid: &'a Grid<T>, col: usize) -> Self {
         ColIter { grid, row: 0, row_back: grid.num_rows(), col }
     }
+
+    pub fn values(self) -> impl Iterator<Item = &'a T> {
+        self.map(|(_, val)| val)
+    }
 }
 
 impl<'a, T> Iterator for ColIter<'a, T> {
