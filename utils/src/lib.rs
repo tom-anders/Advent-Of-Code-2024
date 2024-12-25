@@ -125,6 +125,12 @@ impl PartSolution for () {
     }
 }
 
+impl<T: PartSolution + Clone> PartSolution for Option<T> {
+    fn as_part_solution(&self) -> Option<String> {
+        self.clone().unwrap().as_part_solution()
+    }
+}
+
 impl<T: PartSolution> From<T> for Solution {
     fn from(part1: T) -> Self {
         Solution { part1: part1.as_part_solution(), part2: None }
